@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres
+    container_name: auth-manager-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: MyStrong!Passw0rd
+      POSTGRES_DB: auth_manager_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - auth_manager_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  pg_data:
+
+networks:
+  auth_manager_network:
+    driver: bridge
