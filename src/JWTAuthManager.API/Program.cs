@@ -1,3 +1,5 @@
+using FluentValidation.AspNetCore;
+using JWTAuthManager.Application;
 using JWTAuthManager.Infrastructure;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -5,6 +7,11 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -25,10 +32,20 @@ builder.Services.AddSwaggerGen(c =>
     // Include XML comments
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
     if (File.Exists(xmlPath))
     {
         c.IncludeXmlComments(xmlPath);
     }
+
+    //c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    //{
+    //    Description = "JWT Authorization header using the Bearer scheme.Example: \"Authorization: Bearer {token}\"",
+    //    Name = "Authorization",
+    //    In = ParameterLocation.Header,
+    //    Type = SecuritySchemeType.ApiKey,
+    //    Scheme = "Bearer"
+    //});
 });
 
 builder.Services.AddCors(options =>
