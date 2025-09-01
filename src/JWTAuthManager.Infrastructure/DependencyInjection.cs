@@ -1,8 +1,6 @@
-﻿using JWTAuthManager.Application.Interfaces;
-using JWTAuthManager.Application.Services;
+﻿using JWTAuthManager.Application.Common.Interfaces.Services;
 using JWTAuthManager.Domain.Repositories;
 using JWTAuthManager.Infrastructure.Data;
-using JWTAuthManager.Infrastructure.Identy;
 using JWTAuthManager.Infrastructure.Repositories;
 using JWTAuthManager.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +17,6 @@ public static class DependencyInjection
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IUserRepository, UserRepository>();
-
-        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IUserService, UserService>();
 
         return services;

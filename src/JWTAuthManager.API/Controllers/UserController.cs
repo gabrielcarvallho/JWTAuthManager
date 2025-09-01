@@ -1,68 +1,73 @@
-﻿using JWTAuthManager.Application.DTOs;
-using JWTAuthManager.Application.Services;
+﻿using JWTAuthManager.Application.Modules.UserManagement.Commands;
+using JWTAuthManager.Application.Modules.UserManagement.Queries;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JWTAuthManager.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+//[Authorize]
 public class UserController : ControllerBase
 {
-    private readonly IUserService _userService;
+    private readonly IMediator _mediator;
 
-    public UserController(IUserService userService)
+    public UserController(IMediator mediator)
     {
-        _userService = userService;
+        _mediator = mediator;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
+    public async Task<IActionResult> GetUsers([FromQuery] GetUsersQuery query)
     {
-        var users = await _userService.GetAllUsersAsync();
-        return Ok(users);
+        var result = await _mediator.Send(query);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDto>> GetUser(Guid id)
+    public async Task<IActionResult> GetUser(Guid id)
     {
-        var user = await _userService.GetUserByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
+        var result = await _mediator.Send(new GetUserByIdQuery(id));
+        if (!result.IsSuccess)
+            return NotFound(result.Message);
 
-        return Ok(user);
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserDto>> RegisterUser([FromBody] CreateUserDto userDto)
+    //[AllowAnonymous]
+    public async Task<IActionResult> RegisterUser([FromBody] CreateUserCommand command)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        var result = await _mediator.Send(command);
 
-        var user = await _userService.CreateUserAsync(userDto);
-        return Ok(user);
+        if (!result.IsSuccess)
+            return BadRequest(result);
+
+        return CreatedAtAction(nameof(GetUser), new { id = result.Data!.Id }, result);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<UserDto>> UpdateUser(Guid id, [FromBody] UpdateUserDto userDto)
+    public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserCommand command)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        if (id != command.Id)
+            return BadRequest("ID mismatch");
 
-        var user = await _userService.UpdateUserAsync(id, userDto);
-        if (user == null)
-            return NotFound();
+        var result = await _mediator.Send(command);
 
-        return Ok(user);
+        if (!result.IsSuccess)
+            return NotFound(result.Message);
+
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteUser(Guid id)
+    public async Task<IActionResult> DeleteUser(Guid id)
     {
-        var result = await _userService.DeleteUserAsync(id);
-        if (!result)
-            return NotFound();
+        var result = await _mediator.Send(new DeleteUserCommand(id));
+
+        if (!result.IsSuccess)
+            return NotFound(result.Message);
 
         return NoContent();
     }

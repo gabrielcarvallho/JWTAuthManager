@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using JWTAuthManager.Application.DTOs;
+using JWTAuthManager.Application.Modules.UserManagement.Commands;
 
-namespace JWTAuthManager.Application.Validators;
+namespace JWTAuthManager.Application.Modules.UserManagement.Validators;
 
-public class CreateUserValidator : AbstractValidator<CreateUserDto>
+public class CreateUserValidator : AbstractValidator<CreateUserCommand>
 {
     public CreateUserValidator()
     {

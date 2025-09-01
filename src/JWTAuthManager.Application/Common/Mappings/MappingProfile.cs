@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using JWTAuthManager.Application.DTOs;
+using JWTAuthManager.Application.Modules.UserManagement.DTOs;
 using JWTAuthManager.Domain.Entities;
 
-namespace JWTAuthManager.Application.Mappings;
+namespace JWTAuthManager.Application.Common.Mappings;
 
 public class MappingProfile : Profile
 {
