@@ -6,10 +6,10 @@ namespace JWTAuthManager.Application.Modules.UserManagement.Queries;
 
 public class GetUserByIdQuery : IQuery<Result<UserDto>>
 {
-    public Guid UserId { get; }
+    public Guid Id { get; }
 
     public GetUserByIdQuery(Guid userId)
     {
-        UserId = userId;
+        Id = userId;
     }
 }

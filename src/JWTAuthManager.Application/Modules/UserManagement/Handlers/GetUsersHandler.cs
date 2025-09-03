@@ -3,26 +3,33 @@ using JWTAuthManager.Application.Common.Interfaces.Messaging.Queries;
 using JWTAuthManager.Application.Common.Models;
 using JWTAuthManager.Application.Modules.UserManagement.DTOs;
 using JWTAuthManager.Application.Modules.UserManagement.Queries;
-using JWTAuthManager.Domain.Repositories;
+using JWTAuthManager.Domain.Interfaces.Repositories;
 
 namespace JWTAuthManager.Application.Modules.UserManagement.Handlers;
 
-public class GetUsersHandler : IQueryHandler<GetUsersQuery, Result<IEnumerable<UserDto>>>
+public class GetUsersHandler : IQueryHandler<GetUsersQuery, Result<PaginatedList<UserDto>>>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUnityOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public GetUsersHandler(IUserRepository userRepository, IMapper mapper)
+    public GetUsersHandler(IUnityOfWork unityOfWork, IMapper mapper)
     {
-        _userRepository = userRepository;
+        _unitOfWork = unityOfWork;
         _mapper = mapper;
     }
 
-    public async Task<Result<IEnumerable<UserDto>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PaginatedList<UserDto>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        var users = await _userRepository.GetAllAsync();
-        var response = _mapper.Map<IEnumerable<UserDto>>(users);
+        var query = _unitOfWork.Users.GetQueryable();
 
-        return Result<IEnumerable<UserDto>>.Success(response);
+        query = query.Where(u => u.isActive == request.IsActive);
+        query = query.OrderBy(u => u.FirstName).ThenBy(u => u.LastName);
+
+        var users = await PaginatedList<UserDto>.CreateAsync(
+            query.Select(u => _mapper.Map<UserDto>(u)),
+            request.PageNumber,
+            request.PageSize);
+
+        return Result<PaginatedList<UserDto>>.Success(users);
     }
 }

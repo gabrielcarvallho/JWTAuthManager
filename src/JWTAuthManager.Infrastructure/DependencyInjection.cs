@@ -1,5 +1,5 @@
 ﻿using JWTAuthManager.Application.Common.Interfaces.Services;
-using JWTAuthManager.Domain.Repositories;
+using JWTAuthManager.Domain.Interfaces.Repositories;
 using JWTAuthManager.Infrastructure.Data;
 using JWTAuthManager.Infrastructure.Repositories;
 using JWTAuthManager.Infrastructure.Services;
@@ -16,8 +16,10 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IUserService, UserService>();
+
+        services.AddScoped<IUnityOfWork, UnityOfWork>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }

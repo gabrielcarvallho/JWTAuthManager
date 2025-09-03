@@ -3,37 +3,48 @@ using JWTAuthManager.Application.Common.Interfaces.Messaging.Commands;
 using JWTAuthManager.Application.Common.Models;
 using JWTAuthManager.Application.Modules.UserManagement.Commands;
 using JWTAuthManager.Application.Modules.UserManagement.DTOs;
-using JWTAuthManager.Domain.Repositories;
+using JWTAuthManager.Domain.Interfaces.Repositories;
 
 namespace JWTAuthManager.Application.Modules.UserManagement.Handlers;
 
 public class UpdateUserHandler : ICommandHandler<UpdateUserCommand, Result<UserDto>>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUnityOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
-    public UpdateUserHandler(IUserRepository userRepository, IMapper mapper)
+    public UpdateUserHandler(IUnityOfWork unityOfWork, IMapper mapper)
     {
-        _userRepository = userRepository;
+        _unitOfWork = unityOfWork;
         _mapper = mapper;
     }
 
     public async Task<Result<UserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(request.Id);
-        if (user == null)
-            return Result<UserDto>.Failure("User not found");
+        try
+        {
+            var user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
 
-        user.Email = request.Email;
-        user.FirstName = request.FirstName;
-        user.LastName = request.LastName;
-        user.isAdmin = request.isAdmin;
-        user.isActive = request.isActive;
-        user.UpdatedAt = DateTime.UtcNow;
+            if (user == null)
+            {
+                return Result<UserDto>.Failure("User not found");
+            }
 
-        await _userRepository.UpdateAsync(user);
-        var response = _mapper.Map<UserDto>(user);
+            user.Email = request.Email;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.isAdmin = request.isAdmin;
+            user.isActive = request.isActive;
+            user.UpdatedAt = DateTime.UtcNow;
 
-        return Result<UserDto>.Success(response);
+            _unitOfWork.Users.Update(user);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var response = _mapper.Map<UserDto>(user);
+            return Result<UserDto>.Success(response);
+        }
+        catch (Exception ex)
+        {
+            return Result<UserDto>.Failure("An error occurred while updating the accounting firm");
+        }
     }
 }

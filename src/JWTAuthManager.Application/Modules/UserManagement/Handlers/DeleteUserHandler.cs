@@ -1,25 +1,38 @@
-﻿using JWTAuthManager.Application.Common.Interfaces.Messaging.Commands;
+﻿using AutoMapper;
+using JWTAuthManager.Application.Common.Interfaces.Messaging.Commands;
 using JWTAuthManager.Application.Common.Models;
 using JWTAuthManager.Application.Modules.UserManagement.Commands;
-using JWTAuthManager.Domain.Repositories;
+using JWTAuthManager.Application.Modules.UserManagement.DTOs;
+using JWTAuthManager.Domain.Interfaces.Repositories;
 
 namespace JWTAuthManager.Application.Modules.UserManagement.Handlers;
 
-public class DeleteUserHandler : ICommandHandler<DeleteUserCommand, Result>
+public class DeleteUserHandler : ICommandHandler<DeleteUserCommand, Result<UserDto>>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IUnityOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public DeleteUserHandler(IUserRepository userRepository)
+    public DeleteUserHandler(IUnityOfWork unityOfWork, IMapper mapper)
     {
-        _userRepository = userRepository;
+        _unitOfWork = unityOfWork;
+        _mapper = mapper;
     }
 
-    public async Task<Result> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UserDto>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        if (!await _userRepository.ExistsAsync(request.Id))
-            return Result.Failure("User not found");
+        var user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
 
-        await _userRepository.DeleteAsync(request.Id);
-        return Result.Success("User deleted successfully");
+        if (user == null)
+        {
+            return Result<UserDto>.Failure("User not found");
+        }
+
+        var userDto = _mapper.Map<UserDto>(user);
+        
+        user.isActive = false;
+        _unitOfWork.Users.Update(user);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return Result<UserDto>.Success(userDto);
     }
 }
