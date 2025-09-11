@@ -1,6 +1,15 @@
 # JWTAuthManager
 
-Uma API .NET robusta para autenticação e autorização de usuários utilizando JWT (JSON Web Tokens), gerenciamento de tokens de atualização (refresh tokens) e blacklist de tokens. O projeto foi desenvolvido com foco nos principais conceitos de Clean Architecture, Domain-Driven Design (DDD) e Command Query Responsibility Segregation (CQRS), garantindo uma estrutura escalável e organizada. 
+Uma API .NET robusta para autenticação e autorização de usuários utilizando JWT (JSON Web Tokens), gerenciamento de tokens de atualização (refresh tokens) e blacklist de tokens. O projeto foi desenvolvido com foco nos principais conceitos de Clean Architecture, Domain-Driven Design (DDD) e Command Query Responsibility Segregation (CQRS), garantindo uma estrutura escalável e organizada.
+
+## Arquitetura
+
+O projeto foi desenvolvido com base nos princípios de Clean Architecture, Domain-Driven Design (DDD) e CQRS (Command Query Responsibility Segregation), organizando as responsabilidades em camadas bem definidas para garantir manutenibilidade, testabilidade, escalabilidade e foco no domínio do negócio.
+
+- **Domain**: Entidades de negócio e interfaces de repositórios/serviços.
+- **Application**: Implementa os casos de uso da aplicação. Aqui aplicamos o padrão CQRS, separando operações de escrita (Commands) das operações de leitura (Queries), cada uma com seus respectivos handlers, além de DTOs, validações e mapeamentos.
+- **Infrastructure**: Implementação de repositórios, contexto do banco de dados (EF Core).
+- **Api**: Camada de apresentação (controllers), configuração do Swagger, middlewares e inicialização da aplicação.
 
 ---
 
@@ -62,7 +71,7 @@ JWTAuthManager/
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [PostgreSQL](https://www.postgresql.org/) (ou utilize o docker-compose)
-- (Opcional) [Docker Compose](https://docs.docker.com/compose/)
+- [Docker Compose](https://docs.docker.com/compose/) (Opcional)
 
 ### 1. Configuração do Banco de Dados
 
