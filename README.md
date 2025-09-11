@@ -50,6 +50,8 @@ JWTAuthManager/
     │   ├── Security/                      # Implementações de segurança (ex: BCryptPasswordHasher)
     │   ├── Services/                      # Serviços de infraestrutura
     │   └── DependencyInjection.cs         # Injeção de dependências da infraestrutura
+├── JWTAuthManager.sln # Solução do Visual Studio
+├── docker-compose.yml # (Opcional) PostgreSQL em Container
 ```
 
 ---
