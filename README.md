@@ -117,8 +117,6 @@ Acesse `/swagger` na URL da API para visualizar e testar os endpoints.
 
 ---
 
-## Estrutura do Projeto
-
 ## Tecnologias Utilizadas
 - .NET Core 8
 - Entity Framework Core (PostgreSQL)
@@ -128,3 +126,4 @@ Acesse `/swagger` na URL da API para visualizar e testar os endpoints.
 - BCrypt.Net
 
 - Swagger (Swashbuckle)
+
