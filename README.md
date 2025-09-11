@@ -8,7 +8,7 @@ O projeto foi desenvolvido com base nos princípios de Clean Architecture, Domai
 
 - **Domain**: Entidades de negócio e interfaces de repositórios/serviços.
 - **Application**: Implementa os casos de uso da aplicação. Aqui aplicamos o padrão CQRS, separando operações de escrita (Commands) das operações de leitura (Queries), cada uma com seus respectivos handlers, além de DTOs, validações e mapeamentos.
-- **Infrastructure**: Implementação de repositórios, contexto do banco de dados (EF Core).
+- **Infrastructure**: Implementação de repositórios e contexto do banco de dados (EF Core).
 - **Api**: Camada de apresentação (controllers), configuração do Swagger, middlewares e inicialização da aplicação.
 
 ---
@@ -126,4 +126,5 @@ Acesse `/swagger` na URL da API para visualizar e testar os endpoints.
 - AutoMapper
 - FluentValidation
 - BCrypt.Net
+
 - Swagger (Swashbuckle)
