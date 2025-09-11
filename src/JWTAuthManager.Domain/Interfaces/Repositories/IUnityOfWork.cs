@@ -3,6 +3,8 @@
 public interface IUnityOfWork : IDisposable
 {
     IUserRepository Users { get; }
+    IRefreshTokenRepository RefreshToken { get; }
+    IBlacklistedTokenRepository BlacklistedToken { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

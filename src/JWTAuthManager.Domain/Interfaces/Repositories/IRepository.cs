@@ -1,4 +1,4 @@
-﻿using JWTAuthManager.Domain.Entities;
+﻿using JWTAuthManager.Domain.Entities.Common;
 using System.Linq.Expressions;
 
 namespace JWTAuthManager.Domain.Interfaces.Repositories;
@@ -7,6 +7,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
 {
     Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
     Task<IEnumerable<TEntity>> GetPagedAsync(

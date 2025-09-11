@@ -1,4 +1,4 @@
-﻿using JWTAuthManager.Domain.Entities;
+﻿using JWTAuthManager.Domain.Entities.Common;
 using JWTAuthManager.Domain.Interfaces.Repositories;
 using JWTAuthManager.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +25,11 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
     public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await _dbSet.ToListAsync(cancellationToken);
+    }
+
+    public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
     public virtual async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)

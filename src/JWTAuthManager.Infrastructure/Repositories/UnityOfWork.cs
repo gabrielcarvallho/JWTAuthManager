@@ -10,6 +10,8 @@ public class UnityOfWork : IUnityOfWork
     private IDbContextTransaction? _transaction;
 
     private IUserRepository? _users;
+    private IRefreshTokenRepository? _refreshTokens;
+    private IBlacklistedTokenRepository? _blacklistedTokens;
 
     public UnityOfWork(AppDbContext context)
     {
@@ -18,6 +20,12 @@ public class UnityOfWork : IUnityOfWork
 
     public IUserRepository Users =>
         _users ??= new UserRepository(_context);
+
+    public IRefreshTokenRepository RefreshToken =>
+        _refreshTokens ??= new RefreshTokenRepository(_context);
+
+    public IBlacklistedTokenRepository BlacklistedToken =>
+        _blacklistedTokens ??= new BlacklistedTokenRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

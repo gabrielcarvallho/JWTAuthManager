@@ -6,6 +6,7 @@ using JWTAuthManager.Application.Modules.UserManagement.Commands;
 using JWTAuthManager.Application.Modules.UserManagement.DTOs;
 using JWTAuthManager.Domain.Entities;
 using JWTAuthManager.Domain.Interfaces.Repositories;
+using Microsoft.AspNetCore.Identity;
 
 namespace JWTAuthManager.Application.Modules.UserManagement.Handlers;
 
@@ -13,12 +14,14 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
 {
     private readonly IUnityOfWork _unitOfWork;
     private readonly IUserService _userService;
+    private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IMapper _mapper;
 
-    public CreateUserHandler(IUnityOfWork unityOfWork, IUserService userService, IMapper mapper)
+    public CreateUserHandler(IUnityOfWork unityOfWork, IUserService userService, IPasswordHasher<User> passwordHasher, IMapper mapper)
     {
         _unitOfWork = unityOfWork;
         _userService = userService;
+        _passwordHasher = passwordHasher;
         _mapper = mapper;
     }
 
@@ -36,7 +39,7 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
                 FirstName = request.FirstName,
                 LastName = request.LastName
             };
-            user.PasswordHash = _userService.HashPassword(user, request.Password);
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
             _unitOfWork.Users.Add(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

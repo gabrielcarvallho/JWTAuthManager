@@ -8,7 +8,7 @@ namespace JWTAuthManager.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -22,21 +22,18 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetUsers([FromQuery] GetUsersQuery query)
     {
         var result = await _mediator.Send(query);
-        return Ok(result);
+        return result.IsSuccess ? Ok(result) : BadRequest(result.Message);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetUser(Guid id)
     {
         var result = await _mediator.Send(new GetUserByIdQuery(id));
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-
-        return Ok(result);
+        return result.IsSuccess ? Ok(result) : BadRequest(result.Message);
     }
 
     [HttpPost]
-    //[AllowAnonymous]
+    [AllowAnonymous]
     public async Task<IActionResult> RegisterUser([FromBody] CreateUserCommand command)
     {
         var result = await _mediator.Send(command);
@@ -65,10 +62,6 @@ public class UserController : ControllerBase
     public async Task<IActionResult> DeleteUser(Guid id)
     {
         var result = await _mediator.Send(new DeleteUserCommand(id));
-
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-
-        return NoContent();
+        return result.IsSuccess ? NoContent() : NotFound(result.Message);
     }
 }

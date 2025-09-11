@@ -1,4 +1,4 @@
-﻿namespace JWTAuthManager.Domain.Entities;
+﻿namespace JWTAuthManager.Domain.Entities.Common;
 
 public class BaseEntity
 {

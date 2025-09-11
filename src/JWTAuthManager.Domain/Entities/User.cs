@@ -1,4 +1,6 @@
-﻿namespace JWTAuthManager.Domain.Entities;
+﻿using JWTAuthManager.Domain.Entities.Common;
+
+namespace JWTAuthManager.Domain.Entities;
 
 public class User : BaseEntity
 {

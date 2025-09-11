@@ -1,8 +1,11 @@
 ﻿using JWTAuthManager.Application.Common.Interfaces.Services;
+using JWTAuthManager.Domain.Entities;
 using JWTAuthManager.Domain.Interfaces.Repositories;
 using JWTAuthManager.Infrastructure.Data;
 using JWTAuthManager.Infrastructure.Repositories;
+using JWTAuthManager.Infrastructure.Security;
 using JWTAuthManager.Infrastructure.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +19,15 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
+        services.AddHttpContextAccessor();
+
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IUserService, UserService>();
 
         services.AddScoped<IUnityOfWork, UnityOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
+
+        services.AddScoped<IPasswordHasher<User>, BCryptPasswordHasher<User>>();
 
         return services;
     }
