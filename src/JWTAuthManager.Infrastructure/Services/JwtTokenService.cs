@@ -39,7 +39,7 @@ public class JwtTokenService : IJwtTokenService
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-            new Claim("is_active", user.isActive.ToString()),
+            new Claim("is_active", user.IsActive.ToString()),
             new Claim("jti", jti),
             new Claim("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64), // Issued At
             new Claim("nbf", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64) // Not Before
@@ -68,13 +68,40 @@ public class JwtTokenService : IJwtTokenService
             .Replace("=", "");
     }
 
+    public string GeneratePasswordResetToken(User user)
+    {
+        var secret = _configuration["Jwt:Secret"];
+        var issuer = _configuration["Jwt:Issuer"];
+        var audience = _configuration["Jwt:Audience"];
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("purpose", "password_reset")
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(60),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
     public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"])),
             ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = false
@@ -111,6 +138,37 @@ public class JwtTokenService : IJwtTokenService
             };
 
             tokenHandler.ValidateToken(token, validationParameters, out _);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public bool ValidatePasswordResetToken(string token, User user)
+    {
+        try
+        {
+            if (!ValidateToken(token))
+                return false;
+
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(token);
+
+            var tokenUserId = jsonToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var tokenEmail = jsonToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var tokenPurpose = jsonToken.Claims.FirstOrDefault(c => c.Type == "purpose")?.Value;
+
+            if (tokenPurpose != "password_reset")
+                return false;
+
+            if (string.IsNullOrEmpty(tokenUserId) || tokenUserId != user.Id.ToString())
+                return false;
+
+            if (string.IsNullOrEmpty(tokenEmail) || tokenEmail != user.Email)
+                return false;
+
             return true;
         }
         catch

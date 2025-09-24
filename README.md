@@ -109,7 +109,7 @@ No diretório da solução, rode:
 dotnet run --project JWTAuthManager.Api
 ```
 
-A API estará disponível em `https://localhost:7043` ou `http://localhost:5225`.
+A API estará disponível em `http://localhost:5274/swagger` ou `https://localhost:7258/swagger`.
 
 ### 4. Documentação Swagger
 

@@ -23,6 +23,7 @@ public static class DependencyInjection
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         services.AddScoped<IUnityOfWork, UnityOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();

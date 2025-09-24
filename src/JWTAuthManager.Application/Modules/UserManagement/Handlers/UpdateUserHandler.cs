@@ -32,8 +32,8 @@ public class UpdateUserHandler : ICommandHandler<UpdateUserCommand, Result<UserD
             user.Email = request.Email;
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
-            user.isAdmin = request.isAdmin;
-            user.isActive = request.isActive;
+            user.IsAdmin = request.IsAdmin;
+            user.IsActive = request.IsActive;
             user.UpdatedAt = DateTime.UtcNow;
 
             _unitOfWork.Users.Update(user);

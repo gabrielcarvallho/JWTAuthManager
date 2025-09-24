@@ -47,15 +47,10 @@ public class UserController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserCommand command)
     {
-        if (id != command.Id)
-            return BadRequest("ID mismatch");
+        command.Id = id;
 
         var result = await _mediator.Send(command);
-
-        if (!result.IsSuccess)
-            return NotFound(result.Message);
-
-        return Ok(result);
+        return !result.IsSuccess ? Ok(result) : NotFound(result.Message);
     }
 
     [HttpDelete("{id}")]

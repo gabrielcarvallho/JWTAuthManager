@@ -19,6 +19,15 @@ services:
       retries: 10
       start_period: 60s
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: auth-manager-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - auth_manager_network
+
 volumes:
   pg_data:
 

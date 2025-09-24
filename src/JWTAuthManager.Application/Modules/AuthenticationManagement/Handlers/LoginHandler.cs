@@ -36,7 +36,7 @@ public class LoginHandler : ICommandHandler<LoginCommand, Result<AuthenticationD
     public async Task<Result<AuthenticationDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _unitOfWork.Users
-            .FirstOrDefaultAsync(u => u.Email == request.Email && u.isActive, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Email == request.Email && u.IsActive, cancellationToken);
 
         if (user == null)
         {

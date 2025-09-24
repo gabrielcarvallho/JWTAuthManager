@@ -22,7 +22,7 @@ public class GetUsersHandler : IQueryHandler<GetUsersQuery, Result<PaginatedList
     {
         var query = _unitOfWork.Users.GetQueryable();
 
-        query = query.Where(u => u.isActive == request.IsActive);
+        query = query.Where(u => u.IsActive == request.IsActive);
         query = query.OrderBy(u => u.FirstName).ThenBy(u => u.LastName);
 
         var users = await PaginatedList<UserDto>.CreateAsync(

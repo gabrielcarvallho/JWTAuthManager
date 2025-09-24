@@ -13,24 +13,27 @@ namespace JWTAuthManager.Application.Modules.UserManagement.Handlers;
 public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserDto>>
 {
     private readonly IUnityOfWork _unitOfWork;
-    private readonly IUserService _userService;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IMapper _mapper;
+    private readonly IEmailService _emailService;
 
-    public CreateUserHandler(IUnityOfWork unityOfWork, IUserService userService, IPasswordHasher<User> passwordHasher, IMapper mapper)
+    public CreateUserHandler(
+        IUnityOfWork unityOfWork,
+        IPasswordHasher<User> passwordHasher, 
+        IMapper mapper, 
+        IEmailService emailService)
     {
         _unitOfWork = unityOfWork;
-        _userService = userService;
         _passwordHasher = passwordHasher;
         _mapper = mapper;
+        _emailService = emailService;
     }
 
     public async Task<Result<UserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            var isEmailExists = await _unitOfWork.Users.ExistsAsync(u => u.Email == request.Email, cancellationToken);
-            if (isEmailExists)
+            if (await _unitOfWork.Users.ExistsAsync(u => u.Email == request.Email, cancellationToken))
                 return Result<UserDto>.Failure("A user with this email already exists");
 
             var user = new User
@@ -43,6 +46,9 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
 
             _unitOfWork.Users.Add(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var fullName = $"{user.FirstName} {user.LastName}".Trim();
+            await _emailService.SendWelcomeEmailAsync(user.Email, fullName);
 
             var response = _mapper.Map<UserDto>(user);
             return Result<UserDto>.Success(response);

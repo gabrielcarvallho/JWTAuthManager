@@ -29,7 +29,7 @@ public class DeleteUserHandler : ICommandHandler<DeleteUserCommand, Result<UserD
 
         var userDto = _mapper.Map<UserDto>(user);
         
-        user.isActive = false;
+        user.IsActive = false;
         _unitOfWork.Users.Update(user);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
