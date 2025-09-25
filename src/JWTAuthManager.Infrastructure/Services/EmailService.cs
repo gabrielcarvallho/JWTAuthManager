@@ -1,5 +1,6 @@
 ﻿using JWTAuthManager.Application.Common.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Net.Mail;
 using System.Net;
 
@@ -8,10 +9,12 @@ namespace JWTAuthManager.Infrastructure.Services;
 public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
+    private readonly ILogger<EmailService> _logger;
 
-    public EmailService(IConfiguration configuration)
+    public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
     {
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task SendEmailAsync(string toEmail, string subject, string body, bool isHtml = true)
@@ -20,14 +23,16 @@ public class EmailService : IEmailService
         {
             if (!ValidateEmail(toEmail))
             {
+                _logger.LogError("Invalid email format: {Email}", toEmail);
                 throw new ArgumentException($"Invalid email format: {toEmail}", nameof(toEmail));
             }
 
             var emailSettings = _configuration.GetSection("EmailSettings");
 
-            // Adicionar logger para reastrear os erros
             if (string.IsNullOrEmpty(emailSettings["SmtpHost"]))
             {
+                _logger.LogInformation("Email would be sent to {Email} with subject: {Subject}", toEmail, subject);
+                _logger.LogDebug("Email body: {Body}", body);
                 return;
             }
 
@@ -49,10 +54,13 @@ public class EmailService : IEmailService
             };
 
             mailMessage.To.Add(toEmail);
+
             await client.SendMailAsync(mailMessage);
+            _logger.LogInformation("Email sent successfully to {Email}", toEmail);
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to send email to {Email}", toEmail );
             throw new InvalidOperationException("Failed to send email.", ex);
         }
     }

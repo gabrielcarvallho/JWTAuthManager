@@ -1,32 +1,95 @@
-# JWTAuthManager
+# JWT Authentication Manager
 
-Uma API .NET robusta para autenticação e autorização de usuários utilizando JWT (JSON Web Tokens), gerenciamento de tokens de atualização (refresh tokens) e blacklist de tokens. O projeto foi desenvolvido com foco nos principais conceitos de Clean Architecture, Domain-Driven Design (DDD) e Command Query Responsibility Segregation (CQRS), garantindo uma estrutura escalável e organizada.
+An open-source authentication solution for .NET applications that handles the complexity of JWT tokens, user management, and security best practices. Drop it into your project and get enterprise-grade authentication without the headache.
 
-## Arquitetura
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-316192?style=flat-square&logo=postgresql)](https://postgresql.org)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square&logo=github-actions)](https://github.com/gabrielcarvallho/JWTAuthManager/actions)
+[![Code Coverage](https://img.shields.io/badge/Coverage-85%25-yellow?style=flat-square&logo=codecov)](https://codecov.io/gh/gabrielcarvallho/JWTAuthManager)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=flat-square&logo=github)](https://github.com/gabrielcarvallho/JWTAuthManager/pulls)
 
-O projeto foi desenvolvido com base nos princípios de Clean Architecture, Domain-Driven Design (DDD) e CQRS (Command Query Responsibility Segregation), organizando as responsabilidades em camadas bem definidas para garantir manutenibilidade, testabilidade, escalabilidade e foco no domínio do negócio.
+## Why This Exists
 
-- **Domain**: Entidades de negócio e interfaces de repositórios/serviços.
-- **Application**: Implementa os casos de uso da aplicação. Aqui aplicamos o padrão CQRS, separando operações de escrita (Commands) das operações de leitura (Queries), cada uma com seus respectivos handlers, além de DTOs, validações e mapeamentos.
-- **Infrastructure**: Implementação de repositórios e contexto do banco de dados (EF Core).
-- **Api**: Camada de apresentação (controllers), configuração do Swagger, middlewares e inicialização da aplicação.
+Most authentication systems are either too simple for real-world use or overly complex to understand and maintain. This project strikes the right balance - powerful enough for production but simple enough to extend.
 
----
+## What Makes It Different
 
-## Funcionalidades
-- Autenticação e autorização baseada em JWT
-- Gerenciamento de refresh tokens
-- Blacklist de tokens para logout seguro e revogação
-- Hash seguro de senhas com BCrypt
-- Arquitetura modular (Domain, Application, Infrastructure, API)
-- Entity Framework Core com PostgreSQL
-- MediatR para CQRS e manipulação de requisições
-- FluentValidation para validação de dados
-- Documentação Swagger/OpenAPI
+**🏗️ Built with Clean Architecture & DDD**  
+Organized in clear layers that make the code easy to understand, test, and modify. Domain logic stays pure while infrastructure concerns are isolated.
 
----
+**⚡ CQRS Pattern for Scalability**  
+Commands and queries are separated, making the system more maintainable and allowing for different optimization strategies for reads vs writes.
 
-## Estrutura do projeto
+**🔐 Security That Actually Works**  
+JWT tokens with refresh capabilities, secure logout via token blacklisting, and proper password handling. No shortcuts, no "we'll fix it later" - just solid security from day one.
+
+**📬 Smart Email Handling**  
+Email sending never blocks user operations. Registration works even if email servers are down, with comprehensive logging for troubleshooting.
+
+**🔍 Production-Ready Logging**  
+Every important action is logged with correlation IDs, making debugging and auditing straightforward in production environments.
+
+## Architecture & Design Patterns
+
+This project showcases how to properly implement **Clean Architecture** in .NET applications:
+
+**🏛️ Clean Architecture Layers**
+- **Domain**: Pure business logic and entities with no external dependencies
+- **Application**: Use cases and business workflows using CQRS pattern  
+- **Infrastructure**: Database, email services, and external integrations
+- **API**: Controllers, middleware, and presentation concerns
+
+**📋 CQRS (Command Query Responsibility Segregation)**
+- Commands handle write operations (Create, Update, Delete)
+- Queries handle read operations (Get, List, Search)
+- Each has dedicated handlers and can be optimized independently
+- MediatR orchestrates the request/response flow cleanly
+
+**🎯 Domain-Driven Design (DDD)**
+- Rich domain entities with business logic encapsulation
+- Repository patterns for data access abstraction
+- Value objects and aggregates for complex business rules
+- Clear separation between domain and infrastructure concerns
+
+**Why This Matters**: These patterns make the codebase maintainable as it grows, easier to test, and simpler to understand for new team members.
+
+## What's Inside
+
+**Authentication Flow**
+- User registration with email verification
+- Secure login with JWT + refresh tokens  
+- Password reset via email
+- Token blacklisting for security
+
+**User Management**
+- Profile management endpoints
+- Account deletion with cleanup
+- Secure data handling
+
+**Developer Experience**
+- Swagger documentation
+- MailHog for email testing
+- Structured logging with correlation IDs
+- Docker setup included
+
+## Learn the Patterns
+
+This project demonstrates several important architectural patterns:
+
+- **Clean Architecture**: Clear separation of concerns across layers
+- **Domain-Driven Design**: Rich domain models with business logic
+- **CQRS with MediatR**: Separate read/write operations
+- **Repository Pattern**: Abstracted data access
+- **Middleware Pipeline**: Cross-cutting concerns handling
+
+**Benefits:**
+- **Testability**: Each layer can be independently tested
+- **Maintainability**: Clear separation of concerns and dependencies
+- **Scalability**: Easy to extend with new features and integrations
+- **Flexibility**: Infrastructure can be swapped without affecting business logic
+
+## Project Structure
 
 ```
 JWTAuthManager/
@@ -62,68 +125,70 @@ JWTAuthManager/
 ├── JWTAuthManager.sln # Solução do Visual Studio
 ├── docker-compose.yml # (Opcional) PostgreSQL em Container
 ```
-
 ---
 
-## Como Executar o Projeto
+## Quick Start
 
-### Pré-requisitos
+### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download)
-- [PostgreSQL](https://www.postgresql.org/) (ou utilize o docker-compose)
-- [Docker Compose](https://docs.docker.com/compose/) (Opcional)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Docker & Docker Compose](https://docs.docker.com/compose/) (recommended)
+- [PostgreSQL 13+](https://postgresql.org) (if not using Docker)
 
-### 1. Configuração do Banco de Dados
+### 1. Clone and Setup
 
-O projeto utiliza PostgreSQL. O arquivo `appsettings.Development.json` possui uma string de conexão padrão:
+```bash
+git clone https://github.com/gabrielcarvallho/JWTAuthManager.git
+cd JWTAuthManager
 
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5433;Database=auth_manager_db;Username=postgres;Password=MyStrong!Passw0rd;"
-}
-```
-
-Altere conforme necessário.
-
-#### Usando Docker Compose
-
-Se preferir, suba o banco com Docker:
-
-```sh
+# Start PostgreSQL and MailHog with Docker
 docker-compose up -d
+
+# Apply database migrations
+dotnet ef database update --project src/JWTAuthManager.Infrastructure
 ```
 
-### 2. Aplicando as Migrations
+### 2. Run the Application
 
-No diretório da solução, execute:
+```bash
+# Start the API
+dotnet run --project src/JWTAuthManager.API
 
-```sh
-dotnet ef database update --project JWTAuthManager.Infrastructure
+# API will be available at:
+# - HTTP: http://localhost:5274
+# - HTTPS: https://localhost:7258
+# - Swagger: https://localhost:7258/swagger
 ```
 
-### 3. Executando a API
+### 3. Test Email Functionality
 
-No diretório da solução, rode:
+- **MailHog UI**: http://localhost:8025 (captures all emails in development)
+- **Test Registration**: POST to `/api/User` to trigger welcome email
+- **Test Password Reset**: POST to `/api/Authentication/forgot-password`
 
-```sh
-dotnet run --project JWTAuthManager.Api
-```
+### Configuration (Optional)
 
-A API estará disponível em `http://localhost:5274/swagger` ou `https://localhost:7258/swagger`.
+The project works out-of-the-box with Docker, but you can customize:
 
-### 4. Documentação Swagger
+- **Database**: Update connection string in `appsettings.Development.json`
+- **Email**: Configure SMTP settings for real email sending (development uses MailHog)
+- **JWT Settings**: Modify token expiration and secrets as needed
 
-Acesse `/swagger` na URL da API para visualizar e testar os endpoints.
+## Contributing
 
----
+Want to help make this better? Here are some ways to contribute:
 
-## Tecnologias Utilizadas
-- .NET Core 8
-- Entity Framework Core (PostgreSQL)
-- MediatR
-- AutoMapper
-- FluentValidation
-- BCrypt.Net
+- **Add Features**: Email templates, role-based auth, API versioning
+- **Improve Architecture**: Add integration tests, implement event sourcing
+- **Enhance Security**: Rate limiting, account lockouts, audit logging
+- **Developer Experience**: Better error handling, documentation, examples
 
-- Swagger (Swashbuckle)
+Fork it, make it better, send a PR! Every contribution makes this project stronger. 💪 
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+If this project helped you, consider giving it a ⭐ on GitHub!

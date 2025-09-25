@@ -20,31 +20,24 @@ public class UpdateUserHandler : ICommandHandler<UpdateUserCommand, Result<UserD
 
     public async Task<Result<UserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        try
+        var user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
+
+        if (user == null)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
-
-            if (user == null)
-            {
-                return Result<UserDto>.Failure("User not found");
-            }
-
-            user.Email = request.Email;
-            user.FirstName = request.FirstName;
-            user.LastName = request.LastName;
-            user.IsAdmin = request.IsAdmin;
-            user.IsActive = request.IsActive;
-            user.UpdatedAt = DateTime.UtcNow;
-
-            _unitOfWork.Users.Update(user);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            var response = _mapper.Map<UserDto>(user);
-            return Result<UserDto>.Success(response);
+            return Result<UserDto>.Failure("User not found");
         }
-        catch (Exception ex)
-        {
-            return Result<UserDto>.Failure("An error occurred while updating the accounting firm");
-        }
+
+        user.Email = request.Email;
+        user.FirstName = request.FirstName;
+        user.LastName = request.LastName;
+        user.IsAdmin = request.IsAdmin;
+        user.IsActive = request.IsActive;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        var response = _mapper.Map<UserDto>(user);
+        return Result<UserDto>.Success(response);
     }
 }
