@@ -44,7 +44,6 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
             FirstName = request.FirstName,
             LastName = request.LastName
         };
-        user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
         _unitOfWork.Users.Add(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -52,7 +51,7 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
         try
         {
             var fullName = $"{user.FirstName} {user.LastName}".Trim();
-            await _emailService.SendWelcomeEmailAsync(user.Email, fullName);
+            //await _emailService.SendWelcomeEmailAsync(user.Email, fullName);
 
             _logger.LogInformation("Welcome email sent successfully to user {Email}", user.Email);
         }

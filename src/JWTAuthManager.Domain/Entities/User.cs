@@ -1,4 +1,5 @@
 ﻿using JWTAuthManager.Domain.Entities.Common;
+using JWTAuthManager.Domain.Enums;
 
 namespace JWTAuthManager.Domain.Entities;
 
@@ -7,7 +8,7 @@ public class User : BaseEntity
     public string Email { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
-    public bool IsAdmin { get; set; } = false;
+    public UserRole Role { get; set; } = UserRole.ReadOnly;
     public bool IsActive { get; set; } = true;
     public DateTime? LastLogin { get; set; }
     public string? PasswordHash { get; set; }

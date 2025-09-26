@@ -16,5 +16,7 @@ public class UpdateUserValidator : AbstractValidator<UpdateUserCommand>
         RuleFor(x => x.LastName)
             .NotEmpty().WithMessage("Last name is required.")
             .MaximumLength(100).WithMessage("Last name cannot exceed 50 characters.");
+        RuleFor(x => x.Role)
+            .IsInEnum().WithMessage("Invalid user role");
     }
 }

@@ -65,13 +65,17 @@ public class EmailService : IEmailService
         }
     }
 
-    public async Task SendWelcomeEmailAsync(string toEmail, string userName)
+    public async Task SendWelcomeEmailAsync(string toEmail, string userName, string resetToken)
     {
+        var resetUrl = $"{_configuration["Frontend:BaseUrl"]}/reset-password?token={resetToken}";
+
         var subject = "Bem-vindo!";
         var body = $@"
             <h2>Bem-vindo {userName}!</h2>
             <p>Sua conta foi criada com sucesso.</p>
             <p>Você já pode começar a usar nossa plataforma.</p>
+            <p>Clique no link abaixo para redefinir sua senha:</p>
+            <p><a href='{resetUrl}' style='background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Redefinir Senha</a></p>
             <br>
         ";
 

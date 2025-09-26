@@ -33,8 +33,8 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    [AllowAnonymous]
-    public async Task<IActionResult> RegisterUser([FromBody] CreateUserCommand command)
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command)
     {
         var result = await _mediator.Send(command);
 
@@ -54,6 +54,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
         var result = await _mediator.Send(new DeleteUserCommand(id));

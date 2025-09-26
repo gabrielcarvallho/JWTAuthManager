@@ -30,7 +30,6 @@ public class UpdateUserHandler : ICommandHandler<UpdateUserCommand, Result<UserD
         user.Email = request.Email;
         user.FirstName = request.FirstName;
         user.LastName = request.LastName;
-        user.IsAdmin = request.IsAdmin;
         user.IsActive = request.IsActive;
         user.UpdatedAt = DateTime.UtcNow;
 

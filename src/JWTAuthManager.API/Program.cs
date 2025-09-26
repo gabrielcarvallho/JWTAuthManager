@@ -106,6 +106,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Authorization policies
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+    {
+        policy.RequireAssertion(context =>
+        {
+            var roleValueClaim = context.User.FindFirst("role");
+            if (roleValueClaim == null) 
+                return false;
+
+            return roleValueClaim.Value == "Admin";
+        });
+        policy.RequireAuthenticatedUser();
+    });
+});
+
 // CORS
 builder.Services.AddCors(options =>
 {

@@ -16,10 +16,7 @@ public class CreateUserValidator : AbstractValidator<CreateUserCommand>
         RuleFor(x => x.LastName)
             .NotEmpty().WithMessage("Last name is required.")
             .MaximumLength(100).WithMessage("Last name cannot exceed 50 characters.");
-        RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Password is required.")
-            .MinimumLength(8).WithMessage("Password must be at least 8 characters long.");
-        RuleFor(x => x.ConfirmPassword)
-            .Equal(x => x.Password).WithMessage("Passwords do not match.");
+        RuleFor(x => x.Role)
+            .IsInEnum().WithMessage("Invalid user role");
     }
 }

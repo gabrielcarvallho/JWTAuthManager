@@ -2,13 +2,6 @@
 
 An open-source authentication solution for .NET applications that handles the complexity of JWT tokens, user management, and security best practices. Drop it into your project and get enterprise-grade authentication without the headache.
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/8.0)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-316192?style=flat-square&logo=postgresql)](https://postgresql.org)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square&logo=github-actions)](https://github.com/gabrielcarvallho/JWTAuthManager/actions)
-[![Code Coverage](https://img.shields.io/badge/Coverage-85%25-yellow?style=flat-square&logo=codecov)](https://codecov.io/gh/gabrielcarvallho/JWTAuthManager)
-[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=flat-square&logo=github)](https://github.com/gabrielcarvallho/JWTAuthManager/pulls)
-
 ## Why This Exists
 
 Most authentication systems are either too simple for real-world use or overly complex to understand and maintain. This project strikes the right balance - powerful enough for production but simple enough to extend.
@@ -188,7 +181,3 @@ Fork it, make it better, send a PR! Every contribution makes this project strong
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-If this project helped you, consider giving it a ⭐ on GitHub!
