@@ -17,6 +17,7 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly IMapper _mapper;
     private readonly IEmailService _emailService;
+    private readonly IJwtTokenService _jwtTokenService;
     private readonly ILogger<CreateUserHandler> _logger;
 
     public CreateUserHandler(
@@ -24,12 +25,14 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
         IPasswordHasher<User> passwordHasher, 
         IMapper mapper, 
         IEmailService emailService,
+        IJwtTokenService jwtTokenService,
         ILogger<CreateUserHandler> logger)
     {
         _unitOfWork = unityOfWork;
         _passwordHasher = passwordHasher;
         _mapper = mapper;
         _emailService = emailService;
+        _jwtTokenService = jwtTokenService;
         _logger = logger;
     }
 
@@ -42,8 +45,10 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
         {
             Email = request.Email,
             FirstName = request.FirstName,
-            LastName = request.LastName
+            LastName = request.LastName,
+            Role = request.Role
         };
+        user.PasswordHash = _passwordHasher.HashPassword(user, Guid.NewGuid().ToString("N").Substring(0, 8));
 
         _unitOfWork.Users.Add(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -51,8 +56,9 @@ public class CreateUserHandler : ICommandHandler<CreateUserCommand, Result<UserD
         try
         {
             var fullName = $"{user.FirstName} {user.LastName}".Trim();
-            //await _emailService.SendWelcomeEmailAsync(user.Email, fullName);
+            var token = _jwtTokenService.GeneratePasswordResetToken(user);
 
+            await _emailService.SendWelcomeEmailAsync(user.Email, fullName, token);
             _logger.LogInformation("Welcome email sent successfully to user {Email}", user.Email);
         }
         catch (Exception ex)
